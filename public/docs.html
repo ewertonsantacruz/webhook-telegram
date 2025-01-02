@@ -3,224 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Webhook Forwarder - Documentation</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" rel="stylesheet">
+    <title>Telegram Webhook Documentation</title>
     <style>
-        .doc-section {
-            margin-bottom: 3rem;
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        .code-block {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 4px;
-            margin: 1rem 0;
+        code {
+            background: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
         }
-        .nav-pills .nav-link.active {
-            background-color: #0d6efd;
-        }
-        .sidebar {
-            position: sticky;
-            top: 20px;
-        }
-        @media (max-width: 768px) {
-            .sidebar {
-                position: static;
-                margin-bottom: 2rem;
-            }
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="#">Telegram Webhook Forwarder</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="docs.html">Documentation</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <h1>Telegram Webhook Documentation</h1>
+    
+    <h2>Endpoints</h2>
+    <ul>
+        <li><code>/index.php</code> - Main webhook endpoint</li>
+        <li><code>/test_webhook.php</code> - Test the webhook functionality</li>
+        <li><code>/test_db.php</code> - Test database connection</li>
+    </ul>
 
-    <div class="container my-5">
-        <div class="row">
-            <!-- Sidebar Navigation -->
-            <div class="col-md-3">
-                <div class="sidebar">
-                    <nav class="nav flex-column nav-pills">
-                        <a class="nav-link active" href="#installation">Installation</a>
-                        <a class="nav-link" href="#configuration">Configuration</a>
-                        <a class="nav-link" href="#usage">Usage</a>
-                        <a class="nav-link" href="#troubleshooting">Troubleshooting</a>
-                    </nav>
-                </div>
-            </div>
+    <h2>Testing</h2>
+    <p>To test the webhook:</p>
+    <ol>
+        <li>Configure your <code>config.php</code> with proper credentials</li>
+        <li>Run <code>test_db.php</code> to verify database connection</li>
+        <li>Run <code>test_webhook.php</code> to simulate a Telegram update</li>
+    </ol>
 
-            <!-- Main Content -->
-            <div class="col-md-9">
-                <h1 class="mb-4">Documentation</h1>
-
-                <!-- Installation Section -->
-                <section id="installation" class="doc-section">
-                    <h2>Installation</h2>
-                    <p>Follow these steps to install the Telegram Webhook Forwarder:</p>
-                    
-                    <h4>1. Prerequisites</h4>
-                    <ul>
-                        <li>Web server with PHP 7.4+ and MySQL</li>
-                        <li>SSL certificate (required for Telegram webhooks)</li>
-                        <li>Telegram Bot Token</li>
-                    </ul>
-
-                    <h4>2. Download and Setup</h4>
-                    <div class="code-block">
-                        <pre><code class="language-bash">
-# Clone or download the files to your web directory
-git clone https://github.com/yourusername/telegram-webhook-forwarder.git
-cd telegram-webhook-forwarder
-
-# Set permissions
-chmod 755 .
-chmod 755 public src config
-chmod 644 public/*.php src/*.php
-chmod 644 .htaccess
-                        </code></pre>
-                    </div>
-
-                    <h4>3. Database Setup</h4>
-                    <div class="code-block">
-                        <pre><code class="language-sql">
-CREATE DATABASE telegram_forwarder;
-USE telegram_forwarder;
-
-CREATE TABLE telegram_logs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    chat_id VARCHAR(50),
-    message TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-                        </code></pre>
-                    </div>
-                </section>
-
-                <!-- Configuration Section -->
-                <section id="configuration" class="doc-section">
-                    <h2>Configuration</h2>
-                    
-                    <h4>1. Update config.php</h4>
-                    <p>Edit <code>config/config.php</code> with your settings:</p>
-                    <div class="code-block">
-                        <pre><code class="language-php">
-return [
-    'telegram_bot_token' => 'YOUR_BOT_TOKEN',
-    'webhook_url' => 'YOUR_DESTINATION_WEBHOOK_URL',
-    'database' => [
-        'host' => 'localhost',
-        'username' => 'your_db_username',
-        'password' => 'your_db_password',
-        'database' => 'telegram_forwarder'
-    ]
-];
-                        </code></pre>
-                    </div>
-
-                    <h4>2. Set Telegram Webhook</h4>
-                    <p>Register your webhook URL with Telegram:</p>
-                    <div class="code-block">
-                        <pre><code class="language-bash">
-curl -F "url=https://your-domain.com/webhook-telegram/src/telegram_webhook.php" \
-     https://api.telegram.org/botYOUR_BOT_TOKEN/setWebhook
-                        </code></pre>
-                    </div>
-                </section>
-
-                <!-- Usage Section -->
-                <section id="usage" class="doc-section">
-                    <h2>Usage</h2>
-                    
-                    <h4>Monitoring Messages</h4>
-                    <ol>
-                        <li>Access the dashboard at <code>https://your-domain.com/webhook-telegram/public/index.html</code></li>
-                        <li>Messages will appear automatically within 30 seconds</li>
-                        <li>Use the "Refresh Now" button for immediate updates</li>
-                    </ol>
-
-                    <h4>Testing the Webhook</h4>
-                    <p>Use the test endpoint to verify your setup:</p>
-                    <div class="code-block">
-                        <pre><code class="language-bash">
-curl https://your-domain.com/webhook-telegram/public/test_webhook.php
-                        </code></pre>
-                    </div>
-                </section>
-
-                <!-- Troubleshooting Section -->
-                <section id="troubleshooting" class="doc-section">
-                    <h2>Troubleshooting</h2>
-                    
-                    <h4>Common Issues</h4>
-                    <div class="accordion" id="troubleshootingAccordion">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#issue1">
-                                    Messages not appearing in dashboard
-                                </button>
-                            </h2>
-                            <div id="issue1" class="accordion-collapse collapse show">
-                                <div class="accordion-body">
-                                    <ol>
-                                        <li>Verify webhook is set correctly: <code>curl https://api.telegram.org/botYOUR_BOT_TOKEN/getWebhookInfo</code></li>
-                                        <li>Check database connection in config.php</li>
-                                        <li>Review logs in logs/messages.log</li>
-                                    </ol>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#issue2">
-                                    Permission errors
-                                </button>
-                            </h2>
-                            <div id="issue2" class="accordion-collapse collapse">
-                                <div class="accordion-body">
-                                    <p>Run these commands to fix permissions:</p>
-                                    <pre><code class="language-bash">
-chmod 755 .
-chmod 755 public src config
-chmod 644 public/*.php src/*.php
-chmod 666 logs/messages.log
-                                    </code></pre>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-        </div>
-    </div>
-
-    <footer class="bg-light py-4 mt-5">
-        <div class="container text-center">
-            <p class="mb-0">Need help? Contact support or open an issue on GitHub.</p>
-        </div>
-    </footer>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-php.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-sql.min.js"></script>
+    <h2>Logs</h2>
+    <p>Logs are stored in:</p>
+    <ul>
+        <li>File: <code>/logs/messages.log</code></li>
+        <li>Database: <code>telegram_logs</code> table</li>
+    </ul>
 </body>
 </html> 
