@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Messages Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        .log-container {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .message-card {
+            margin-bottom: 1rem;
+            transition: transform 0.2s;
+        }
+        .message-card:hover {
+            transform: translateX(5px);
+        }
+        .refresh-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .auto-refresh {
+            font-size: 0.8em;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4 mb-5">
+        <div class="row mb-4">
+            <div class="col">
+                <h1 class="display-4">Telegram Messages</h1>
+                <p class="lead">Real-time message monitoring dashboard</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent Messages</h5>
+                <div>
+                    <span class="auto-refresh me-3">Auto-refresh: <span id="countdown">30</span>s</span>
+                    <button class="btn btn-light btn-sm" onclick="refreshMessages()">
+                        <i class="fa fa-refresh"></i> Refresh Now
+                    </button>
+                </div>
+            </div>
+            <div class="card-body log-container" id="messagesContainer">
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let countdown = 30;
+        
+        function updateCountdown() {
+            document.getElementById('countdown').textContent = countdown;
+            countdown--;
+            if (countdown < 0) {
+                countdown = 30;
+                refreshMessages();
+            }
+        }
+
+        function refreshMessages() {
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = `
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            `;
+
+            fetch('get_logs.php')
+                .then(response => response.json())
+                .then(data => {
+                    container.innerHTML = '';
+                    
+                    if (data.length === 0) {
+                        container.innerHTML = `
+                            <div class="alert alert-info">
+                                No messages found. Send a message to your Telegram bot to see it here!
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    data.forEach(message => {
+                        const card = document.createElement('div');
+                        card.className = 'card message-card shadow-sm';
+                        card.innerHTML = `
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="card-subtitle text-muted">Chat ID: ${message.chat_id}</h6>
+                                    <small class="text-muted">${message.created_at}</small>
+                                </div>
+                                <p class="card-text">${message.message}</p>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching messages:', error);
+                    container.innerHTML = `
+                        <div class="alert alert-danger">
+                            Error loading messages. Please try again later.
+                        </div>
+                    `;
+                });
+        }
+
+        // Initial load
+        refreshMessages();
+
+        // Set up auto-refresh
+        setInterval(updateCountdown, 1000);
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 
